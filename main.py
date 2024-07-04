@@ -1,20 +1,14 @@
 from data_access.db_connection import fetch_data
-
-CONNECTION_STRING = (
-    r'mssql+pyodbc://DESKTOP-PIOPBBU\SDD/sensor_data?'
-    r'driver=ODBC+Driver+17+for+SQL+Server&'
-    r'Trusted_Connection=yes'
-)
-
-QUERY = 'SELECT * FROM [sensor_data].[dbo].[WELL-00001]'
-
+from alert.send_alert import send_message
+from config.config import config
 
 def main():
     # Data Ingestion
-    data = fetch_data(CONNECTION_STRING, QUERY)
-    print("Your data is ready!")
-    print(data.head())
-   
-   
+    data = fetch_data(config.CONNECTION_STRING, 'SELECT * FROM [sensor_data].[dbo].[WELL-00001]')
+    
+    if data is not None:
+        send_message("Hi, I can see the data now!")
+    
+
 if __name__ == "__main__":
     main()
