@@ -10,3 +10,7 @@ def detect_fluctuations(series, window_size, threshold):
     # Calculate the difference between the current value and the value at the start of the window
     fluctuation = series.diff(window_size).abs()
     return fluctuation > threshold
+
+def label_fluctutation(data):
+    data['fluctuation'] = detect_fluctuations(data['P-TPT-psi'], window_size, threshold)
+    return data

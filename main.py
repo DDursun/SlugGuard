@@ -25,11 +25,7 @@ def process_well_data(connection_string, well):
         #send_message(f"Processing data for well: {well}")
         pass
     
-    return(data) 
-
-def label_fluctutation(data):
-    data['fluctuation'] = detect_fluctuations(data['P-TPT-psi'], window_size, threshold)
-    return data
+    return(data)
 
 def main():
     connection_string = config.CONNECTION_STRING
