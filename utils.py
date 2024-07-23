@@ -1,4 +1,5 @@
 from data_access.db_connection import fetch_data
+from expert import *
 
 def get_distinct_wells(connection_string):
     query = 'SELECT DISTINCT well FROM [sensor_data].[dbo].[allwells]'
@@ -6,13 +7,13 @@ def get_distinct_wells(connection_string):
     wells = wells_data['well'].tolist()
     return wells
     
-def detect_and_label_fluctuations(data, column, window_size, threshold):
+def detect_and_label_fluctuations(data, column, window_size=20, threshold=40):
     # Calculate the exponential rolling mean and standard deviation
     ewm_mean = data[column].ewm(span=window_size, adjust=False).mean()
     # Calculate the difference from the exponential rolling mean
     fluctuation = (data[column] - ewm_mean).abs()
     # Detect where the fluctuation exceeds the threshold
-    data['fluctuation'] = fluctuation > threshold
+    data['fluctuation'] = (fluctuation > threshold).astype(int)
     return data
 
 def detect_and_label_choke_changes(data, window=10):
@@ -36,7 +37,20 @@ def detect_and_label_choke_changes(data, window=10):
 
 
     
-
+def apply_rules(df):
+    engine = SluggingExpertSystem()
+    results = []
+    for _, row in df.iterrows():
+        engine.reset()
+        engine.declare(Fact(fluctuation=row['fluctuation']))
+        engine.declare(Fact(choke_change=row['choke_change']))
+        engine.run()
+        result_fact = next((fact for fact in engine.facts.values() if 'result' in fact), None)
+        result = result_fact['result'] if result_fact else None
+        results.append(result)
+    
+    df['result'] = results
+    return df
 
 
 

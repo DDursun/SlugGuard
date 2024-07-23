@@ -10,20 +10,21 @@ threshold = 45  # Define the threshold for fluctuations
 def process_well_data(connection_string, well):
 
     #   Reading last 10 days data for profile creation
-    query = f"SELECT *
+    query = f"""SELECT *
                 FROM (
                     SELECT *, ROW_NUMBER() OVER (ORDER BY timestamp DESC) as RowNum
                     FROM allwells
                     WHERE well = '{well}'
                 ) sub
                 WHERE RowNum <= 14400
-                ORDER BY RowNum"
+                ORDER BY RowNum"""
 
     data = fetch_data(connection_string, query)
     if data is not None:
         # Process the data for the well
+        data["P-TPT-psi"] = data["P_TPT"]*0.000145037738
         #send_message(f"Processing data for well: {well}")
-        pass
+
     
     return(data)
 
@@ -33,8 +34,14 @@ def main():
     
     if wells is not None:
         for well in wells:
-            process_well_data(connection_string, well)
+            data = process_well_data(connection_string, well)
             #send_message(f"Completed processing for well: {well}")
+            data = detect_and_label_fluctuations(data,"P-TPT-psi")
+            data = detect_and_label_choke_changes(data)
+            data = apply_rules(data)
+            print(data.head())
+
+
 
 if __name__ == "__main__":
     main()
