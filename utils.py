@@ -1,13 +1,13 @@
 from data_access.db_connection import fetch_data
 from expert import *
 
-def get_distinct_wells(connection_string):
+def get_distinct_wells(connection_string, engine):
     query = 'SELECT DISTINCT well FROM [sensor_data].[dbo].[allwells]'
-    wells_data = fetch_data(connection_string, query)
+    wells_data = fetch_data(connection_string, query, engine)
     wells = wells_data['well'].tolist()
     return wells
     
-def detect_and_label_fluctuations(data, column, window_size=20, threshold=40):
+def detect_and_label_fluctuations(data, column, window_size=30, threshold=35):
     # Calculate the exponential rolling mean and standard deviation
     ewm_mean = data[column].ewm(span=window_size, adjust=False).mean()
     # Calculate the difference from the exponential rolling mean
@@ -49,10 +49,12 @@ def apply_rules(df):
         result = result_fact['result'] if result_fact else None
         results.append(result)
     
-    df['result'] = results
+    df['predicted_class'] = results
     return df
 
 
+def write_todb(df,engine):
+        df.to_sql('allwells', engine, if_exists='replace', index=False)
 
 
 

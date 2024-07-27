@@ -20,7 +20,7 @@ class SluggingExpertSystem(KnowledgeEngine):
 
     @Rule(Fact(action='sluggingExpertSystem'), Fact(fluctuation=1), Fact(choke_change=0))
     def rule_3(self):
-        self.declare(Fact(result=1))
+        self.declare(Fact(result=3))
 
     @Rule(Fact(action='sluggingExpertSystem'), Fact(result=MATCH.result))
     def show_result(self, result):
