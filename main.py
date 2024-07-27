@@ -4,13 +4,12 @@ from config.config import config
 from utils import *
 import pandas as pd
 import matplotlib.pyplot as plt
-from sqlalchemy import create_engine
 
 window_size = 20  # Define the window size (number of data points)
 threshold = 40  # Define the threshold for fluctuations
 
 
-def process_well_data(connection_string, well, engine):
+def process_well_data(well):
 
     #   Reading last 10 days data for profile creation
     query = f"""SELECT *
@@ -22,7 +21,7 @@ def process_well_data(connection_string, well, engine):
                 WHERE RowNum <= 14400
                 ORDER BY RowNum"""
 
-    data = fetch_data(connection_string, query, engine)
+    data = fetch_data(query)
     if data is not None:
         # Process the data for the well
         data["P-TPT-psi"] = data["P_TPT"]*0.000145037738
@@ -32,16 +31,13 @@ def process_well_data(connection_string, well, engine):
     return(data)
 
 def main():
-    connection_string = config.CONNECTION_STRING
-    engine = create_engine(connection_string)
-
-    wells = get_distinct_wells(connection_string, engine)
+    wells = get_distinct_wells()
 
     finaldbdf = pd.DataFrame()
     
     if wells is not None:
         for well in wells:
-            data = process_well_data(connection_string, well, engine)
+            data = process_well_data(well)
             #send_message(f"Completed processing for well: {well}")
             data = detect_and_label_fluctuations(data,"P-TPT-psi")
             data = detect_and_label_choke_changes(data)
@@ -55,7 +51,8 @@ def main():
 
 
     finaldbdf = finaldbdf.drop(columns=['RowNum', 'fluctuation','choke_change'])
-    write_todb(finaldbdf, engine)
+    print("Ready to write to db")
+    #write_todb(finaldbdf)
 
 
 if __name__ == "__main__":

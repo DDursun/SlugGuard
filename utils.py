@@ -1,9 +1,9 @@
 from data_access.db_connection import fetch_data
 from expert import *
 
-def get_distinct_wells(connection_string, engine):
+def get_distinct_wells():
     query = 'SELECT DISTINCT well FROM [sensor_data].[dbo].[allwells]'
-    wells_data = fetch_data(connection_string, query, engine)
+    wells_data = fetch_data(query)
     wells = wells_data['well'].tolist()
     return wells
     
@@ -53,8 +53,8 @@ def apply_rules(df):
     return df
 
 
-def write_todb(df,engine):
-        df.to_sql('allwells', engine, if_exists='replace', index=False)
+def write_todb(df):
+        df.to_sql('allwells', if_exists='replace', index=False)
 
 
 
