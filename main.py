@@ -3,7 +3,9 @@ from alert.send_alert import send_message
 from config.config import config
 from utils import *
 import pandas as pd
-import matplotlib.pyplot as plt
+from schedule import every, repeat, run_pending
+import datetime
+import time
 
 window_size = 20  # Define the window size (number of data points)
 threshold = 40  # Define the threshold for fluctuations
@@ -30,6 +32,7 @@ def process_well_data(well):
     
     return(data)
 
+@repeat(every(60).minutes)
 def main():
     wells = get_distinct_wells()
 
@@ -42,7 +45,8 @@ def main():
             data = detect_and_label_fluctuations(data,"P-TPT-psi")
             data = detect_and_label_choke_changes(data)
             data = apply_rules(data)
-            finaldbdf = finaldbdf.append(data)
+            finaldbdf = pd.concat([finaldbdf, data], ignore_index=True)
+
         
         total_cases = len(finaldbdf)
         correct_cases = (finaldbdf["predicted_class"] == finaldbdf["class"]).sum()
@@ -51,9 +55,12 @@ def main():
 
 
     finaldbdf = finaldbdf.drop(columns=['RowNum', 'fluctuation','choke_change'])
-    print("Ready to write to db")
+    print("Run completed at: ", datetime.datetime.now)
     #write_todb(finaldbdf)
-
 
 if __name__ == "__main__":
     main()
+
+    while True:
+        run_pending()
+        time.sleep(10)
