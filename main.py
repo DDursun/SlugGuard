@@ -1,5 +1,5 @@
 from data_access.db_connection import fetch_data
-from alert.send_alert import send_message
+from alert.send_alert import *
 from config.config import config
 from utils import *
 import pandas as pd
@@ -7,8 +7,8 @@ from schedule import every, repeat, run_pending
 import datetime
 import time
 
-window_size = 20  # Define the window size (number of data points)
-threshold = 40  # Define the threshold for fluctuations
+window_size=30  # Define the window size (number of data points)
+threshold=35  # Define the threshold for fluctuations
 
 
 def process_well_data(well):
@@ -32,7 +32,7 @@ def process_well_data(well):
     
     return(data)
 
-@repeat(every(60).minutes)
+#@repeat(every(1).minutes)
 def main():
     wells = get_distinct_wells()
 
@@ -41,11 +41,32 @@ def main():
     if wells is not None:
         for well in wells:
             data = process_well_data(well)
-            #send_message(f"Completed processing for well: {well}")
+           
             data = detect_and_label_fluctuations(data,"P-TPT-psi")
             data = detect_and_label_choke_changes(data)
             data = apply_rules(data)
+
+            case = None 
+
+            plot_well(data, well, window_size, threshold)
+            send_image(well)
+            send_message(f"Completed processing for well: {well}")
+
+            
+            """
+            send_message(f"Completed processing for well: {well}")
+            if case is not None:
+                #send_plot()
+                pass
+            else:
+                send_message(f"No slugging detected in well {well}")
+
+            """    
+
+
             finaldbdf = pd.concat([finaldbdf, data], ignore_index=True)
+
+
 
         
         total_cases = len(finaldbdf)
@@ -63,4 +84,4 @@ if __name__ == "__main__":
 
     while True:
         run_pending()
-        time.sleep(10)
+        time.sleep(1)

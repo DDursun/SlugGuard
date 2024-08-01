@@ -1,4 +1,5 @@
 from data_access.db_connection import fetch_data
+import matplotlib.pyplot as plt
 from expert import *
 
 def get_distinct_wells():
@@ -55,6 +56,40 @@ def apply_rules(df):
 
 def write_todb(df):
         df.to_sql('allwells', if_exists='replace', index=False)
+
+def plot_well(data,well,window_size,threshold):
+
+    data['EMA'] = data['P-TPT-psi'].ewm(span=window_size, adjust=False).mean()
+
+    # Filter to only periods where fluctuation is True
+    fluctuation_periods = data[data['fluctuation'].astype(bool)]
+
+    # Plot the results
+    plt.figure(figsize=(14, 10))
+
+    # Plot the original pressure data
+    plt.plot(data['timestamp'], data['P-TPT-psi'], label='Pressure', color='blue')
+
+    # Plot the EMA
+    plt.plot(data['timestamp'], data['EMA'], label='Exponential Moving Average (EMA)', color='green', marker='o', markersize=1)
+
+    # Highlight the detected fluctuation periods
+    if not fluctuation_periods.empty:
+        start_idx = None
+        for i in range(len(fluctuation_periods)):
+            if start_idx is None:
+                start_idx = fluctuation_periods.index[i]
+            if i == len(fluctuation_periods) - 1 or fluctuation_periods.index[i+1] != fluctuation_periods.index[i] + 1:
+                plt.axvspan(data['timestamp'][start_idx], data['timestamp'][fluctuation_periods.index[i]], color='red', alpha=0.3)
+                start_idx = None
+
+    plt.xlabel('Timestamp')
+    plt.ylabel('Pressure')
+    plt.title(f'{well} - Pressure Trend with Detected Fluctuations > {threshold} psi')
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(f"{well}.jpg")
 
 
 
