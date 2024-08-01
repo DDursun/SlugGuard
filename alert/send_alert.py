@@ -1,10 +1,8 @@
-import slack
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 import requests
 from slack_sdk import WebClient
-
 
 env_path = Path('alert') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -17,18 +15,14 @@ def send_message(text):
     client.chat_postMessage(channel="#slugging-wells", text = text)
 
 def send_image(well):
+
     ## Send image to a channel
     # Get an image in your environment and transform this in bytes
     img = open(f"{well}.jpg", 'rb').read()
     # Authenticate to the Slack API via the generated token
     client = WebClient(token=os.environ['SLACK_TOKEN'])
-    # Send the image
-    #client.files_upload(
-    #        channel_id = channel_id,
-    #        #content = f"{well} is slugging, here is the plot for you:",
-    #        file = f"./{well}.jpg",)
-    
-    ###############################33
+  
+
     # Step 1/4: Get the URL to upload to.
     attachment_size = len(img)
     print(attachment_size)

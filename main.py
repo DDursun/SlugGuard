@@ -28,11 +28,10 @@ def process_well_data(well):
         # Process the data for the well
         data["P-TPT-psi"] = data["P_TPT"]*0.000145037738
         #send_message(f"Processing data for well: {well}")
-
     
     return(data)
 
-#@repeat(every(1).minutes)
+@repeat(every(1).minutes)
 def main():
     wells = get_distinct_wells()
 
@@ -68,7 +67,6 @@ def main():
 
 
 
-        
         total_cases = len(finaldbdf)
         correct_cases = (finaldbdf["predicted_class"] == finaldbdf["class"]).sum()
         accuracy = correct_cases / total_cases * 100
@@ -76,7 +74,7 @@ def main():
 
 
     finaldbdf = finaldbdf.drop(columns=['RowNum', 'fluctuation','choke_change'])
-    print("Run completed at: ", datetime.datetime.now)
+    print("Run completed at: ", datetime.datetime.now())
     #write_todb(finaldbdf)
 
 if __name__ == "__main__":
