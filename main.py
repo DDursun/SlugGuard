@@ -45,32 +45,39 @@ def main():
             data = detect_and_label_choke_changes(data)
             data = apply_rules(data)
 
-            case = None 
-
-            plot_well(data, well, window_size, threshold)
-            send_image(well)
-            send_message(f"Completed processing for well: {well}")
-
             
-            """
-            send_message(f"Completed processing for well: {well}")
-            if case is not None:
-                #send_plot()
-                pass
+
+
+
+            total_cases = len(data)
+            # Finding number of total slugging cases in a given time frame
+            slugging_cases = (data["predicted_class"] == 3).sum()
+            slugging_to_normal_ratio = (slugging_cases / total_cases)*100
+            print(slugging_to_normal_ratio)
+        
+            # Activating notification system if 2% of timeframe indicates slugging
+            if slugging_to_normal_ratio > 2:
+                send_message(f"Completed processing for well: {well}")
+                send_message(f"There are {slugging_cases} data points indicating slugging in {well}")
+                plot_well(data, well, window_size, threshold)
+                send_image(well)
+                
             else:
+                send_message(f"Completed processing for well: {well}")
                 send_message(f"No slugging detected in well {well}")
 
-            """    
-
-
+            # Adding all wells into one dataframe for updating database / labels
             finaldbdf = pd.concat([finaldbdf, data], ignore_index=True)
 
 
 
-        total_cases = len(finaldbdf)
+        """"
+        all_cases = len(finaldbdf)
         correct_cases = (finaldbdf["predicted_class"] == finaldbdf["class"]).sum()
-        accuracy = correct_cases / total_cases * 100
+        accuracy = correct_cases / all_cases * 100
         print(format(accuracy, ".2f"))
+
+        """
 
 
     finaldbdf = finaldbdf.drop(columns=['RowNum', 'fluctuation','choke_change'])
