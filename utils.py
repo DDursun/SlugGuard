@@ -10,7 +10,7 @@ def get_distinct_wells():
     
 def detect_and_label_fluctuations(data, column, window_size=30, threshold=35):
     # Calculate the exponential rolling mean and standard deviation
-    ewm_mean = data[column].ewm(span=window_size, adjust=False).mean()
+    ewm_mean = data[column].ewm(span=window_size, adjust=True).mean()
     # Calculate the difference from the exponential rolling mean
     fluctuation = (data[column] - ewm_mean).abs()
     # Detect where the fluctuation exceeds the threshold
@@ -57,9 +57,8 @@ def apply_rules(df):
 def write_todb(df):
         df.to_sql('allwells', if_exists='replace', index=False)
 
-def plot_well(data,well,window_size,threshold):
 
-    data['EMA'] = data['P-TPT-psi'].ewm(span=window_size, adjust=False).mean()
+def plot_well(data, well, window_size, threshold):
 
     # Filter to only periods where fluctuation is True
     fluctuation_periods = data[data['fluctuation'].astype(bool)]
@@ -71,7 +70,8 @@ def plot_well(data,well,window_size,threshold):
     plt.plot(data['timestamp'], data['P-TPT-psi'], label='Pressure', color='blue')
 
     # Plot the EMA
-    plt.plot(data['timestamp'], data['EMA'], label='Exponential Moving Average (EMA)', color='green', marker='o', markersize=1)
+    plt.plot(data['timestamp'], data['P-TPT-psi'].ewm(span=window_size, adjust=False).mean(), label='Exponential Moving Average (EMA)', color='green', marker='o', markersize=1)
+    
 
     # Highlight the detected fluctuation periods
     if not fluctuation_periods.empty:
@@ -90,6 +90,32 @@ def plot_well(data,well,window_size,threshold):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(f"{well}.jpg")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

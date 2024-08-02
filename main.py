@@ -16,7 +16,7 @@ def process_well_data(well):
     #   Reading last 10 days data for profile creation
     query = f"""SELECT *
                 FROM (
-                    SELECT *, ROW_NUMBER() OVER (ORDER BY timestamp DESC) as RowNum
+                    SELECT *, ROW_NUMBER() OVER (ORDER BY timestamp ASC) as RowNum
                     FROM allwells
                     WHERE well = '{well}'
                 ) sub
@@ -31,7 +31,7 @@ def process_well_data(well):
     
     return(data)
 
-@repeat(every(1).minutes)
+@repeat(every(10).minutes)
 def main():
     wells = get_distinct_wells()
 
@@ -70,7 +70,7 @@ def main():
         total_cases = len(finaldbdf)
         correct_cases = (finaldbdf["predicted_class"] == finaldbdf["class"]).sum()
         accuracy = correct_cases / total_cases * 100
-        print(accuracy)
+        print(format(accuracy, ".2f"))
 
 
     finaldbdf = finaldbdf.drop(columns=['RowNum', 'fluctuation','choke_change'])
