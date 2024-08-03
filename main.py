@@ -57,14 +57,23 @@ def main():
         
             # Activating notification system if 2% of timeframe indicates slugging
             if slugging_to_normal_ratio > 2:
-                send_message(f"Completed processing for well: {well}")
-                send_message(f"There are {slugging_cases} data points indicating slugging in {well}")
+                send_message(f"Completed processing for well: {well}, There are {slugging_cases} data points indicating slugging in {well}")
                 plot_well(data, well, window_size, threshold)
                 send_image(well)
-                
+
             else:
                 send_message(f"Completed processing for well: {well}")
                 send_message(f"No slugging detected in well {well}")
+
+            # Send latest operating conditions
+            last_temp = round(data["T_TPT"].iloc[-1],2)
+            last_pressure = round(data["P-TPT-psi"].iloc[-1],2)
+            send_message(f"Current temperature is {last_temp}F, pressure (psi) is {last_pressure}")
+
+            #Send special message if slugging continues in any last 20 points
+            slugging_condition = (data["predicted_class"].iloc[-20:] == 3).any()
+            if slugging_condition:
+                send_message(f"{well} is still slugging, immediate action is needed!")
 
             # Adding all wells into one dataframe for updating database / labels
             finaldbdf = pd.concat([finaldbdf, data], ignore_index=True)
