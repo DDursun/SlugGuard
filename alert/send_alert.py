@@ -22,14 +22,14 @@ def send_image(well):
     # Authenticate to the Slack API via the generated token
     client = WebClient(token=os.environ['SLACK_TOKEN'])
   
-
+  
     # Step 1/4: Get the URL to upload to.
     attachment_size = len(img)
     print(attachment_size)
 
     url_for_uploading = client.files_getUploadURLExternal(
         token=slack_token,
-        filename="Well-01.jpg",
+        filename="{well}.jpg",
         length=attachment_size,
     )
     
@@ -43,7 +43,7 @@ def send_image(well):
     
     # Step 2/4: Upload the file to the URL.
     payload = {
-        "filename": "Well-01.jpg",
+        "filename": "{well}.jpg",
         "token": slack_token,
         # "channels": ["#dsc-dbx-alerts-test"],
     }
