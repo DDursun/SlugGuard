@@ -1,19 +1,18 @@
 # SlugGuard – Expert System for AI-Driven Slugging Detection in Wells
 
 ## Contents
-* [About the assignment](#about-the-assignment)
+* [About the assignment](#about-the-project)
 * [Prerequisites](#prerequisites)
 * [Getting Started](#getting-started)
 * [Usage](#how-to-run-the-application)
 * [Written by](#author)
 
 
-## About the assignment
+## About the project
 
 This project aims to create a framework to detect slugging in wells. This framework includes the end-to-end architecture of 
 the system including - mimicking live sensor data, a database to store the features and labels, main application logic and 
 a notification system.
-
 
 
 
@@ -23,10 +22,10 @@ All the codes in this repository is written in  Python programming language and 
 #### Installing libraries
 
 ```bash
+
 pip install -r requirements.txt
 
-
-
+```
 
 ## Getting Started
 In this section, all the necessary steps to run the applications are highlighted.
@@ -34,7 +33,7 @@ In this section, all the necessary steps to run the applications are highlighted
 First of all, we will need the codes to be downloaded to our system. If you have git, you can directly clone the repository by:
 
 ```
-git clone 
+git clone https://github.com/DDursun/SlugGuard.git
 
 ```
 
@@ -43,7 +42,7 @@ You can also download all the codes from Github as a Zip file.
 
 ## How to run the application
  
-1. Open the corresponding folder path in your terminal and compile Java files using:
+1. Open the corresponding folder path in your terminal and run the application with:
 
 ```bash
 
