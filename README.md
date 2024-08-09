@@ -1,7 +1,7 @@
 # SlugGuard – Expert System for AI-Driven Slugging Detection in Wells
 
 ## Contents
-* [About the assignment](#about-the-project)
+* [About the project](#about-the-project)
 * [Prerequisites](#prerequisites)
 * [Getting Started](#getting-started)
 * [Usage](#how-to-run-the-application)
@@ -15,6 +15,10 @@ the system including - mimicking live sensor data, a database to store the featu
 a notification system.
 
 
+For details:
+
+Please see the Presentation file for details regarding the overall technical approach and software architecture. 
+Please see the Jupyter Notebook file for feature engineering of the time series (test) data.
 
 ## Prerequisites
 All the codes in this repository is written in  Python programming language and in Tenserflow. In order to use the application, prerequisite libraries needs to be installed. Use "requirements.txt" file  
@@ -42,7 +46,7 @@ You can also download all the codes from Github as a Zip file.
 
 ## How to run the application
  
-1. Open the corresponding folder path in your terminal and run the application with:
+Open the corresponding folder path in your terminal and run the application with:
 
 ```bash
 
